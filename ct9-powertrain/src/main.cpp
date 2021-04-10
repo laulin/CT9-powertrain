@@ -65,9 +65,11 @@ void loop() {
         Joystick.update();
 
         Serial.print("Joystick : ");
-        Serial.print(Joystick.get_left_track());
+        Serial.print(Joystick.get_x());
+        //Serial.print(Joystick.get_left_track());
         Serial.print(", ");
-        Serial.print(Joystick.get_right_track());
+        Serial.print(Joystick.get_y());
+        //Serial.print(Joystick.get_right_track());
         Serial.print(", ");
         Serial.print(LeftEncoder.get());
         Serial.print("\n");

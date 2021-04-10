@@ -20,6 +20,9 @@ class AnalogJoystick
         // 512 means 
         uint16_t get_left_track(void);
         uint16_t get_right_track(void);
+
+        uint16_t get_x(void);
+        uint16_t get_y(void);
 };
 
 #endif
