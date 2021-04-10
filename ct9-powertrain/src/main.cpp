@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "optical_encoder.hpp"
+#include "analog_joystick.hpp"
 
 // IO DEFINITION
 // Analog
@@ -38,6 +39,8 @@ void left_optical_interrupt()
 }
 
 
+AnalogJoystick Joystick;
+
 void setup()
 {
     // update display
@@ -45,6 +48,8 @@ void setup()
 
     LeftEncoder.begin(LEFT_OPTICAL_A, LEFT_OPTICAL_B, 360*2);
     attachInterrupt(digitalPinToInterrupt(LEFT_OPTICAL_A), left_optical_interrupt, RISING);
+
+    Joystick.begin(VR_X_PIN, VR_Y_PIN);
 
     Serial.begin(9600);
 }
@@ -55,13 +60,14 @@ void loop() {
     if (currentMillis - previousMillis >= interval)
     {
         // read joystick
-        VRy = analogRead(VR_Y_PIN);
-        VRx = analogRead(VR_X_PIN);
+        //VRy = analogRead(VR_Y_PIN);
+        //VRx = analogRead(VR_X_PIN);
+        Joystick.update();
 
         Serial.print("Joystick : ");
-        Serial.print(VRx);
+        Serial.print(Joystick.get_left_track());
         Serial.print(", ");
-        Serial.print(VRy);
+        Serial.print(Joystick.get_right_track());
         Serial.print(", ");
         Serial.print(LeftEncoder.get());
         Serial.print("\n");
