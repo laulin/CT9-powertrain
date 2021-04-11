@@ -3,6 +3,7 @@
 #include "analog_joystick.hpp"
 #include "motor_driver.hpp"
 #include "current_sensor.hpp"
+#include "timer.hpp"
 
 // IO DEFINITION
 // Analog
@@ -29,10 +30,6 @@ uint8_t LEFT_CURRENT_SENSOR_PIN = A8;
 // Variables will change:
 int ledState = LOW; // ledState used to set the LED
 
-// Generally, you should use "unsigned long" for variables that hold time
-// The value will quickly become too large for an int to store
-unsigned long previousMillis = 0; // will store last time LED was updated
-
 // constants won't change:
 const long interval = 100; // interval at which to blink (milliseconds)
 
@@ -47,6 +44,7 @@ void left_optical_interrupt()
 AnalogJoystick Joystick;
 MotorDriver LeftMotor;
 CurrentSensor LeftCurrentSensor;
+Timer timer;
 
 void setup()
 {
@@ -59,15 +57,17 @@ void setup()
     Joystick.begin(VR_X_PIN, VR_Y_PIN);
     LeftMotor.begin(LEFT_MOTOR_A, LEFT_MOTOR_B, LEFT_MOTOR_PWM, MOTOR_MAX_SPEED, 0);
     LeftCurrentSensor.begin(LEFT_CURRENT_SENSOR_PIN, 0);
+    timer.begin();
 
     Serial.begin(115200);
 }
 
 void loop() {
-    unsigned long currentMillis = millis();
-
-    if (currentMillis - previousMillis >= interval)
+    
+    if (timer.get_delta() >= interval)
     {
+        timer.update();
+
         // read joystick
         Joystick.update();
 
@@ -91,10 +91,6 @@ void loop() {
         Serial.print("\n");
 
         LeftMotor.set(left_track_setpoint);
-
-        // -------- timing ajust ----------------
-        // save the last time you blinked the LED
-        previousMillis = currentMillis;
 
         // if the LED is off turn it on and vice-versa:
         if (ledState == LOW)
