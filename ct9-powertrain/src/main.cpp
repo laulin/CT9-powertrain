@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "optical_encoder.hpp"
 #include "analog_joystick.hpp"
+#include "motor_driver.hpp"
 
 // IO DEFINITION
 // Analog
@@ -12,14 +13,16 @@ uint8_t VR_X_PIN = A1;
 // optical relative position
 uint8_t LEFT_OPTICAL_A = 2;
 uint8_t LEFT_OPTICAL_B = 4;
+uint8_t RIGHT_OPTICAL_A = 3;
+uint8_t RIGHT_OPTICAL_B = 5;
 
 // Power moter management board
-uint8_t LEFT_MOTOR_A = 4;
-uint8_t LEFT_MOTOR_B = 5;
+uint8_t LEFT_MOTOR_A = 50;
+uint8_t LEFT_MOTOR_B = 52;
 uint8_t LEFT_MOTOR_PWM = 6;
 
-int VRx = 0;
-int VRy = 0;
+// current sensor
+uint8_t LEFT_CURRENT_SENSOR = A8;
 
 // Variables will change:
 int ledState = LOW; // ledState used to set the LED
@@ -40,6 +43,7 @@ void left_optical_interrupt()
 
 
 AnalogJoystick Joystick;
+MotorDriver LeftMotor;
 
 void setup()
 {
@@ -50,6 +54,7 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(LEFT_OPTICAL_A), left_optical_interrupt, RISING);
 
     Joystick.begin(VR_X_PIN, VR_Y_PIN);
+    LeftMotor.begin(LEFT_MOTOR_A, LEFT_MOTOR_B, LEFT_MOTOR_PWM, 20, 0);
 
     Serial.begin(9600);
 }
@@ -62,17 +67,23 @@ void loop() {
         // read joystick
         Joystick.update();
 
+        uint16_t left_track_setpoint = Joystick.get_left_track();
+        uint16_t right_track_setpoint = Joystick.get_right_track();
+
         Serial.print("Joystick : (");
         Serial.print(Joystick.get_x());
         Serial.print(", ");
         Serial.print(Joystick.get_y());
         Serial.print("), tracks :(");
-        Serial.print(Joystick.get_left_track());
+        Serial.print(left_track_setpoint);
         Serial.print(", ");
-        Serial.print(Joystick.get_right_track());
+        Serial.print(right_track_setpoint);
+        Serial.print("), encoder :(");
+        Serial.print(LeftEncoder.get());
         Serial.print(")");
-        // Serial.print(LeftEncoder.get());
         Serial.print("\n");
+
+        LeftMotor.set(left_track_setpoint);
 
         // -------- timing ajust ----------------
         // save the last time you blinked the LED
