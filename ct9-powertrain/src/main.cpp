@@ -21,7 +21,7 @@ uint8_t RIGHT_OPTICAL_B = 5;
 uint8_t LEFT_MOTOR_A = 50;
 uint8_t LEFT_MOTOR_B = 52;
 uint8_t LEFT_MOTOR_PWM = 6;
-#define MOTOR_MAX_SPEED 20
+#define MOTOR_MAX_SPEED 255
 
 // current sensor
 uint8_t LEFT_CURRENT_SENSOR_PIN = A8;
@@ -60,7 +60,7 @@ void setup()
     LeftMotor.begin(LEFT_MOTOR_A, LEFT_MOTOR_B, LEFT_MOTOR_PWM, MOTOR_MAX_SPEED, 0);
     LeftCurrentSensor.begin(LEFT_CURRENT_SENSOR_PIN, 0);
 
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 void loop() {
