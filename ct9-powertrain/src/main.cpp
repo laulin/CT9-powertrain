@@ -60,18 +60,18 @@ void loop() {
     if (currentMillis - previousMillis >= interval)
     {
         // read joystick
-        //VRy = analogRead(VR_Y_PIN);
-        //VRx = analogRead(VR_X_PIN);
         Joystick.update();
 
-        Serial.print("Joystick : ");
+        Serial.print("Joystick : (");
         Serial.print(Joystick.get_x());
-        //Serial.print(Joystick.get_left_track());
         Serial.print(", ");
         Serial.print(Joystick.get_y());
-        //Serial.print(Joystick.get_right_track());
+        Serial.print("), tracks :(");
+        Serial.print(Joystick.get_left_track());
         Serial.print(", ");
-        Serial.print(LeftEncoder.get());
+        Serial.print(Joystick.get_right_track());
+        Serial.print(")");
+        // Serial.print(LeftEncoder.get());
         Serial.print("\n");
 
         // -------- timing ajust ----------------
