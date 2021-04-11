@@ -100,10 +100,15 @@ uint16_t AnalogJoystick::get_left_track(void)
     }
     else
     {
-        uint16_t alpha = (this->y * this->x) >> LOG_2_HALF_RANGE;
-        uint16_t beta = ((HALF_RANGE - this->y) * HALF_RANGE) >> LOG_2_HALF_RANGE;
+        uint32_t tmp_x = this->x;
+        uint32_t tmp_y = this->y;
 
-        return alpha + beta;
+        uint32_t alpha = (tmp_y * tmp_x) >> LOG_2_HALF_RANGE;
+        uint32_t beta = ((HALF_RANGE - tmp_y) * HALF_RANGE) >> LOG_2_HALF_RANGE;
+
+        uint32_t result = alpha + beta;
+
+        return (uint16_t) result;
     }
 }
 
