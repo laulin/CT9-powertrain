@@ -2,6 +2,7 @@
 
 #define MAX_SETPOINT 1024
 #define HALF_SETPOINT 512
+#define LOG_2_MAGNIFIER 6
 
 void MotorDriver::begin(uint8_t pin_a, uint8_t pin_b, uint8_t pin_pwm, uint8_t pwm_max, uint8_t polarity)
 {
@@ -22,12 +23,7 @@ void MotorDriver::begin(uint8_t pin_a, uint8_t pin_b, uint8_t pin_pwm, uint8_t p
 
 void MotorDriver::set(uint16_t setpoint)
 {
-    // camp value between 0-1023
-    if (setpoint >= MAX_SETPOINT)
-    {
-        setpoint = MAX_SETPOINT-1;
-    }
-
+    setpoint = setpoint >> LOG_2_MAGNIFIER;
     // reverse direction
     if (this->polarity)
     {

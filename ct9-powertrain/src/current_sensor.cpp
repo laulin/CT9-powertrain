@@ -1,6 +1,7 @@
 #include "current_sensor.hpp"
 
-#define MAX_CURRENT 1023
+#define MAX_CURRENT 65535
+#define LOG_2_MAGNIFIER  6
 
 const PROGMEM uint16_t CURRENT_SENSOR_LUT[1024] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
                                                    17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33,
@@ -76,9 +77,9 @@ void CurrentSensor::begin(uint8_t pin_a, uint8_t polarity)
 
 uint16_t CurrentSensor::get_current()
 {
-    uint16_t current = analogRead(this->pin_a);
+    uint16_t current = analogRead(this->pin_a) ;
 
-    current = pgm_read_word_near(CURRENT_SENSOR_LUT + current);
+    current = pgm_read_word_near(CURRENT_SENSOR_LUT + current) << LOG_2_MAGNIFIER;
     if(this->polarity)
     {
         current = MAX_CURRENT - current;
