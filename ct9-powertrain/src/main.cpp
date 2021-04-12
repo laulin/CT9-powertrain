@@ -73,7 +73,7 @@ void loop() {
 
         uint16_t left_track_setpoint = Joystick.get_left_track();
         uint16_t right_track_setpoint = Joystick.get_right_track();
-        uint16_t left_current_value = LeftCurrentSensor.get_current();
+        //uint16_t left_current_value = LeftCurrentSensor.get_current();
 
         Serial.print("Joystick : (");
         Serial.print(Joystick.get_x());
@@ -83,14 +83,14 @@ void loop() {
         Serial.print(left_track_setpoint);
         Serial.print(", ");
         Serial.print(right_track_setpoint);
-        Serial.print("), encoder :(");
-        Serial.print(LeftEncoder.get());
-        Serial.print("), current :(");
-        Serial.print(left_current_value);
-        Serial.print(")");
+        // Serial.print("), encoder :(");
+        // Serial.print(LeftEncoder.get());
+        // Serial.print("), current :(");
+        // Serial.print(left_current_value);
+        // Serial.print(")");
         Serial.print("\n");
 
-        LeftMotor.set(left_track_setpoint);
+        //LeftMotor.set(left_track_setpoint);
 
         // if the LED is off turn it on and vice-versa:
         if (ledState == LOW)

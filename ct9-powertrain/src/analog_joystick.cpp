@@ -66,9 +66,11 @@ const PROGMEM uint16_t JOYSTICK_LUT[1024] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1
                                              993, 994, 995, 996, 997, 998, 999, 1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008,
                                              1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023};
 
-#define HALF_RANGE 512
-#define FULL_RANGE 1024
-#define LOG_2_HALF_RANGE 9
+#define HALF_RANGE 32768
+#define FULL_RANGE (32768*2)
+#define LOG_2_HALF_RANGE 15
+#define MAGNIFY_FACTOR 64
+#define LOG_2_MAGNIFY_FACTOR 6
 
 void AnalogJoystick::begin(uint8_t pin_x, uint8_t pin_y)
 {
@@ -85,17 +87,16 @@ void AnalogJoystick::update(void)
     uint16_t tmp_y = analogRead(this->pin_y);
 
     // // uncomment for LUT
-    this->x = pgm_read_word_near(JOYSTICK_LUT + tmp_x);
-    this->y = pgm_read_word_near(JOYSTICK_LUT + tmp_y);
+    this->x = pgm_read_word_near(JOYSTICK_LUT + tmp_x) << LOG_2_MAGNIFY_FACTOR;
+    this->y = pgm_read_word_near(JOYSTICK_LUT + tmp_y) << LOG_2_MAGNIFY_FACTOR;
 
     // // uncomment for no LUT
-    //this->x = tmp_x;
-    //this->y = tmp_y;
-
+    //this->x = tmp_x << LOG_2_MAGNIFY_FACTOR;
+    //this->y = tmp_y << LOG_2_MAGNIFY_FACTOR;
 }
 
-// x -> 1024 for foward, 0 for reverse
-// y -> 0 for left, 1024 for right
+// x -> 64k for foward, 0 for reverse
+// y -> 0 for left, 64k for right
 
 uint16_t AnalogJoystick::get_left_track(void)
 {
