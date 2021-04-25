@@ -4,6 +4,7 @@
 #include "motor_driver.hpp"
 #include "current_sensor.hpp"
 #include "timer.hpp"
+#include "smooth_control.hpp"
 
 // IO DEFINITION
 // Analog
@@ -22,10 +23,10 @@ uint8_t RIGHT_OPTICAL_B = 5;
 uint8_t LEFT_MOTOR_A = 50;
 uint8_t LEFT_MOTOR_B = 52;
 uint8_t LEFT_MOTOR_PWM = 6;
-#define MOTOR_MAX_SPEED 255
+#define MOTOR_MAX_SPEED 50
 
 // current sensor
-uint8_t LEFT_CURRENT_SENSOR_PIN = A8;
+uint8_t LEFT_CURRENT_SENSOR_PIN = A9;
 
 // Variables will change:
 int ledState = LOW; // ledState used to set the LED
@@ -45,6 +46,7 @@ AnalogJoystick Joystick;
 MotorDriver LeftMotor;
 CurrentSensor LeftCurrentSensor;
 Timer timer;
+SmoothControl LeftSmoothControl;
 
 void setup()
 {
@@ -58,6 +60,7 @@ void setup()
     LeftMotor.begin(LEFT_MOTOR_A, LEFT_MOTOR_B, LEFT_MOTOR_PWM, MOTOR_MAX_SPEED, 0);
     LeftCurrentSensor.begin(LEFT_CURRENT_SENSOR_PIN, 0);
     timer.begin();
+    LeftSmoothControl.begin(10,30);
 
     Serial.begin(115200);
 }
@@ -66,6 +69,7 @@ void loop() {
     
     if (timer.get_delta() >= interval)
     {
+        unsigned long delta = timer.get_delta();
         timer.update();
 
         // read joystick
@@ -74,6 +78,7 @@ void loop() {
         uint16_t left_track_setpoint = Joystick.get_left_track();
         uint16_t right_track_setpoint = Joystick.get_right_track();
         uint16_t left_current_value = LeftCurrentSensor.get_current();
+        left_track_setpoint = LeftSmoothControl.update(delta, left_track_setpoint);
 
         Serial.print("Joystick : (");
         Serial.print(Joystick.get_x());
@@ -87,7 +92,8 @@ void loop() {
         Serial.print(LeftEncoder.get());
         Serial.print("), current :(");
         Serial.print(left_current_value);
-        Serial.print(")");
+        Serial.print(") ");
+        Serial.print(delta);
         Serial.print("\n");
 
         LeftMotor.set(left_track_setpoint);
@@ -104,5 +110,6 @@ void loop() {
 
         // set the LED with the ledState of the variable:
         digitalWrite(LED_BUILTIN, ledState);
+
     }
 }
