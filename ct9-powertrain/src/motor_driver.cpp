@@ -45,7 +45,7 @@ void MotorDriver::set(uint16_t setpoint)
         digitalWrite(this->pin_a, 0);
         digitalWrite(this->pin_b, 1);
 
-        uint16_t pwm = (HALF_SETPOINT - setpoint) >> 1;
+        uint16_t pwm = (HALF_SETPOINT - setpoint - 1) >> 1;
         pwm = (pwm * this->pwm_max) >> 8; // linear limit
         analogWrite(this->pin_pwm, pwm);
     }
