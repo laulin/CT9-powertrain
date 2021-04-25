@@ -17,7 +17,7 @@ void Timer::update(void)
 unsigned long Timer::get_delta(void)
 {
     unsigned long current_time = millis();
-    if (current_time > this->previous_time)
+    if (current_time >= this->previous_time)
     {
         return current_time - this->previous_time;
     }
