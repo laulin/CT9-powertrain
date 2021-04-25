@@ -25,8 +25,8 @@ uint8_t LEFT_MOTOR_A = 50;
 uint8_t LEFT_MOTOR_B = 52;
 uint8_t LEFT_MOTOR_PWM = 6;
 
-uint8_t RIGHT_MOTOR_A = 48;
-uint8_t RIGHT_MOTOR_B = 46;
+uint8_t RIGHT_MOTOR_A = 46;
+uint8_t RIGHT_MOTOR_B = 48;
 uint8_t RIGHT_MOTOR_PWM = 7;
 #define MOTOR_MAX_SPEED 255
 #define MOTOR_MAX_ACC 10
