@@ -125,7 +125,7 @@ void loop() {
         Serial.print("\n");
 
         LeftMotor.set(left_track_setpoint);
-        RightMotor.set(left_track_setpoint);
+        RightMotor.set(right_track_setpoint);
 
         // if the LED is off turn it on and vice-versa:
         if (ledState == LOW)
