@@ -14,6 +14,7 @@ class CurrentSensor
     public :
         void begin(uint8_t pin_a, uint8_t polarity);
         uint16_t get_current(void);
+        int8_t CurrentSensor::get_current_ampere(void);
 };
 
 #endif

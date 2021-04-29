@@ -87,3 +87,10 @@ uint16_t CurrentSensor::get_current()
 
     return current;
 }
+
+int8_t CurrentSensor::get_current_ampere()
+{
+    int16_t current = analogRead(this->pin_a) - 512;
+    int8_t ampere = current >> 5;
+    return ampere;
+}

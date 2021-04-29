@@ -25,8 +25,8 @@ uint8_t LEFT_MOTOR_A = 50;
 uint8_t LEFT_MOTOR_B = 52;
 uint8_t LEFT_MOTOR_PWM = 6;
 
-uint8_t RIGHT_MOTOR_A = 48;
-uint8_t RIGHT_MOTOR_B = 46;
+uint8_t RIGHT_MOTOR_A = 46;
+uint8_t RIGHT_MOTOR_B = 48;
 uint8_t RIGHT_MOTOR_PWM = 7;
 #define MOTOR_MAX_SPEED 255
 #define MOTOR_MAX_ACC 10
@@ -98,8 +98,8 @@ void loop() {
 
         uint16_t left_track_setpoint = Joystick.get_left_track();
         uint16_t right_track_setpoint = Joystick.get_right_track();
-        uint16_t left_current_value = LeftCurrentSensor.get_current();
-        uint16_t right_current_value = RightCurrentSensor.get_current();
+        int8_t left_current_value = LeftCurrentSensor.get_current_ampere();
+        int8_t right_current_value = RightCurrentSensor.get_current_ampere();
         left_track_setpoint = LeftSmoothControl.update(delta, left_track_setpoint);
         right_track_setpoint = RightSmoothControl.update(delta, right_track_setpoint);
 
@@ -108,22 +108,24 @@ void loop() {
         // Serial.print(", ");
         // Serial.print(Joystick.get_y());
         // Serial.print("), tracks :(");
-        // Serial.print(left_track_setpoint);
-        // Serial.print(", ");
-        // Serial.print(right_track_setpoint);
+        Serial.print("tracks :(");
+        Serial.print(left_track_setpoint);
+        Serial.print(", ");
+        Serial.print(right_track_setpoint);
         Serial.print("), encoder :(");
         Serial.print(LeftEncoder.get());
         Serial.print(", ");
         Serial.print(RightEncoder.get());
         Serial.print(")");
-        // Serial.print("), current :(");
-        // Serial.print(left_current_value);
-        // Serial.print(") ");
-        // Serial.print(delta);
+        Serial.print("), current :(");
+        Serial.print(left_current_value);
+        Serial.print(", ");
+        Serial.print(right_current_value);
+        Serial.print(") ");
         Serial.print("\n");
 
         LeftMotor.set(left_track_setpoint);
-        RightMotor.set(left_track_setpoint);
+        RightMotor.set(right_track_setpoint);
 
         // if the LED is off turn it on and vice-versa:
         if (ledState == LOW)
