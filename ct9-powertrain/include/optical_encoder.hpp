@@ -16,7 +16,7 @@ class OpticalEncoder
         void update(void);
         void reset(void);
         int get(void);
-
+        uint16_t get_speed(int16_t reference, uint8_t reverse);
 };
 
 #endif

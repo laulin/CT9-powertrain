@@ -113,9 +113,9 @@ void loop() {
         Serial.print(", ");
         Serial.print(right_track_setpoint);
         Serial.print("), encoder :(");
-        Serial.print(LeftEncoder.get());
+        Serial.print(LeftEncoder.get_speed(90, 0));
         Serial.print(", ");
-        Serial.print(RightEncoder.get());
+        Serial.print(RightEncoder.get_speed(90, 1));
         Serial.print(")");
         Serial.print("), current :(");
         Serial.print(left_current_value);
