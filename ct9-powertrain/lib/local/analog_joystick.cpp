@@ -65,18 +65,18 @@ const PROGMEM int16_t JOYSTICK_LUT[1024] = {-32768, -32640, -32512, -32385, -322
                                             27145, 27261, 27378, 27495, 27612, 27730, 27848, 27966, 28084, 28203, 28322, 28441, 28560, 28680, 28800, 28920,
                                             29040, 29161, 29282, 29403, 29524, 29646, 29768, 29890, 30012, 30135, 30258, 30381, 30504, 30628, 30752, 30876,
                                             31000, 31125, 31250, 31375, 31500, 31626, 31752, 31878, 32004, 32131, 32258, 32385, 32512, 32640, 32767};
-#define HALF_RANGE 32768
-#define FULL_RANGE (32768*2)
-#define LOG_2_HALF_RANGE 15
-#define MAGNIFY_FACTOR 64
-#define LOG_2_MAGNIFY_FACTOR 6
+
+#define MIN_ADC (0)
+#define MAX_ADC (1023)
+#define MIN_INT16 (-32768) 
+#define MAX_INT16 (32767) 
 
 void AnalogJoystick::begin(uint8_t pin_x, uint8_t pin_y)
 {
     this->pin_x = pin_x;
     this->pin_y = pin_y;
-    x = 0;
-    y = 0;
+    // x = 0;
+    // y = 0;
 }
 
 // to be called on Pin A raising
@@ -92,8 +92,8 @@ void AnalogJoystick::update(void)
 int16_t AnalogJoystick::transform_ADC(int16_t value)
 {
     // validate range
-    if (value > 1023) value = 1023;
-    if (value < 0) value = 0;
+    if (value > MAX_ADC) value = MAX_ADC;
+    if (value < MIN_ADC) value = MIN_ADC;
 
     int16_t tmp_x = pgm_read_word_near(JOYSTICK_LUT + value);
 
@@ -128,7 +128,7 @@ int16_t AnalogJoystick::transform_to_left_track(int16_t x, int16_t y)
     }
     else
     {
-        int32_t complement_y = 32767 - y;
+        int32_t complement_y = MAX_INT16 - y;
         int32_t tmp_x = x;
         int32_t result = (complement_y * tmp_x) >> 15;
 
@@ -145,7 +145,7 @@ int16_t AnalogJoystick::transform_to_right_track(int16_t x, int16_t y)
     }
     else
     {
-        int32_t complement_y = 32768 + y;
+        int32_t complement_y = -MIN_INT16 + y;
         int32_t tmp_x = x;
         int32_t result = (complement_y * tmp_x) >> 15;
 
