@@ -83,69 +83,69 @@ void AnalogJoystick::begin(uint8_t pin_x, uint8_t pin_y)
 // to be called on Pin A raising
 void AnalogJoystick::update(void)
 {
-    uint16_t tmp_x = analogRead(this->pin_x);
-    uint16_t tmp_y = analogRead(this->pin_y);
+    int16_t tmp_x = analogRead(this->pin_x);
+    int16_t tmp_y = analogRead(this->pin_y);
+
+    tmp_x = pgm_read_word_near(JOYSTICK_LUT + tmp_x) - 512;
+    tmp_y = pgm_read_word_near(JOYSTICK_LUT + tmp_y) - 512;
 
     // // uncomment for LUT
-    this->x = pgm_read_word_near(JOYSTICK_LUT + tmp_x) << LOG_2_MAGNIFY_FACTOR;
-    this->y = pgm_read_word_near(JOYSTICK_LUT + tmp_y) << LOG_2_MAGNIFY_FACTOR;
+    //this->x = pgm_read_word_near(JOYSTICK_LUT + tmp_x) << LOG_2_MAGNIFY_FACTOR;
+    //this->y = pgm_read_word_near(JOYSTICK_LUT + tmp_y) << LOG_2_MAGNIFY_FACTOR;
 
     // // uncomment for no LUT
-    //this->x = tmp_x << LOG_2_MAGNIFY_FACTOR;
-    //this->y = tmp_y << LOG_2_MAGNIFY_FACTOR;
+
+    this->x = tmp_x * 64;
+    this->y = tmp_y * 64;
 }
 
 // x -> 64k for foward, 0 for reverse
 // y -> 0 for left, 64k for right
 
-uint16_t AnalogJoystick::get_left_track(void)
+int16_t AnalogJoystick::get_left_track(void)
 {
     // full power on the track
-    if (this->y >= HALF_RANGE)
+    if (this->y >= 0)
     {
         return this->x;
     }
     else
     {
-        uint32_t tmp_x = this->x;
-        uint32_t tmp_y = this->y;
+        int16_t complement_y = this->y + 32767;
 
-        uint32_t alpha = (tmp_y * tmp_x) >> LOG_2_HALF_RANGE;
-        uint32_t beta = ((HALF_RANGE - tmp_y) * HALF_RANGE) >> LOG_2_HALF_RANGE;
+        int32_t result = ((int32_t)(complement_y * this->x))>>16;
 
-        uint32_t result = alpha + beta;
-
-        return (uint16_t) result;
+        return (int16_t)result;
     }
 }
 
-uint16_t AnalogJoystick::get_right_track(void)
+int16_t AnalogJoystick::get_right_track(void)
 {
     // full power on the track
-    if (this->y <= HALF_RANGE)
+    if (this->y <= 0)
     {
         return this->x;
     }
     else
     {
-        uint32_t tmp_x = this->x;
-        uint32_t tmp_y = this->y;
+        // int32_t tmp_x = this->x;
+        // int32_t tmp_y = this->y;
 
-        uint32_t alpha = ((FULL_RANGE - tmp_y) * tmp_x) >> LOG_2_HALF_RANGE;
-        uint32_t beta = ((tmp_y - HALF_RANGE) * HALF_RANGE) >> LOG_2_HALF_RANGE;
+        // int32_t alpha = ((0x7FFF + tmp_y) * tmp_x) >> LOG_2_HALF_RANGE;
+        // int32_t beta = ((tmp_y - HALF_RANGE) * HALF_RANGE) >> LOG_2_HALF_RANGE;
 
-        uint32_t result = alpha + beta;
+        int32_t result = ((int32_t)((0x7FFF - this->y) * this->x));
 
         return (uint16_t)result;
     }
 }
 
-uint16_t AnalogJoystick::get_x(void)
+int16_t AnalogJoystick::get_x(void)
 {
     return this->x;
 }
 
-uint16_t AnalogJoystick::get_y(void)
+int16_t AnalogJoystick::get_y(void)
 {
     return this->y;
 }

@@ -9,8 +9,8 @@ class AnalogJoystick
     private:
         uint8_t pin_x;
         uint8_t pin_y;
-        uint16_t x;
-        uint16_t y;
+        int16_t x;
+        int16_t y;
  
     public :
         void begin(uint8_t, uint8_t);
@@ -18,11 +18,11 @@ class AnalogJoystick
         void update(void);
         // return value range 0 to 64k
         // 32k means  middle
-        uint16_t get_left_track(void);
-        uint16_t get_right_track(void);
+        int16_t get_left_track(void);
+        int16_t get_right_track(void);
 
-        uint16_t get_x(void);
-        uint16_t get_y(void);
+        int16_t get_x(void);
+        int16_t get_y(void);
 };
 
 #endif
