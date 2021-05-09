@@ -16,8 +16,11 @@ class AnalogJoystick
         void begin(uint8_t, uint8_t);
         // to be called to catch joystick position
         void update(void);
-        // return value range 0 to 64k
-        // 32k means  middle
+        int16_t transform_ADC(int16_t value);
+
+        int16_t transform_to_left_track(int16_t x, int16_t y);
+        int16_t transform_to_right_track(int16_t x, int16_t y);
+
         int16_t get_left_track(void);
         int16_t get_right_track(void);
 
