@@ -29,3 +29,6 @@ class Ramp:
 
     def get(self):
         return self._count
+
+    def get_normalized(self, value:int=1023):
+        return int(self._count / self._max_count * value)

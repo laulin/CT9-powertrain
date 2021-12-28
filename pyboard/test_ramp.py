@@ -1,6 +1,4 @@
 import unittest
-from unittest import result
-from unittest.case import expectedFailure
 
 from ramp import Ramp
 
@@ -88,6 +86,12 @@ class TestRamp(unittest.TestCase):
         self.r.update(1,6)
         result = self.r.get()
         expected = 7
+        self.assertEqual(result, expected)
+
+    def test_get_normalized(self):
+        self.r.update(1,10)
+        result = self.r.get_normalized()
+        expected = 1023
         self.assertEqual(result, expected)
 
 if __name__ == "__main__":
