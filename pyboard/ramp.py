@@ -1,6 +1,7 @@
 class Ramp:
-    def __init__(self, max_count:int) -> None:
+    def __init__(self, max_count:int, brake_factor:int=2) -> None:
         self._max_count = max_count
+        self._brake_factor = brake_factor
         self._count = 0
 
     def update(self, direction:int, inc:int):
@@ -8,13 +9,13 @@ class Ramp:
             if self._count >= 0:
                 self._count = self._count + inc
             else:
-                self._count = self._count + inc*2
+                self._count = self._count + inc*self._brake_factor
 
         elif direction < 0:
             if self._count <= 0:
                 self._count = self._count - inc
             else:
-                self._count = self._count - inc*2
+                self._count = self._count - inc*self._brake_factor
 
         else: # == 0
             if self._count > 0:
