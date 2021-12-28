@@ -30,10 +30,15 @@ def transform(forward:bool, reverse:bool, left:bool, right:bool):
 
 class Joystick:
     def __init__(self, forward_pin, reverse_pin, left_pin, right_pin):
-        self._forward_pin = machine.Pin(forward_pin, machine.Pin.OUT)
-        self._reverse_pin = machine.Pin(reverse_pin, machine.Pin.OUT)
-        self._left_pin = machine.Pin(left_pin, machine.Pin.OUT)
-        self._right_pin = machine.Pin(right_pin, machine.Pin.OUT)
+        self._forward_pin = machine.Pin(forward_pin, machine.Pin.IN, machine.Pin.PULL_UP)
+        self._reverse_pin = machine.Pin(reverse_pin, machine.Pin.IN, machine.Pin.PULL_UP)
+        self._left_pin = machine.Pin(left_pin, machine.Pin.IN, machine.Pin.PULL_UP)
+        self._right_pin = machine.Pin(right_pin, machine.Pin.IN, machine.Pin.PULL_UP)
 
     def get(self):
-        return transform(self._forward_pin.value, self._reverse_pin.value, self._left_pin.value, self._right_pin.value)
+        forward = not self._forward_pin.value()
+        reverse = not self._reverse_pin.value()
+        left = not self._left_pin.value()
+        right = not self._right_pin.value()
+        #print("inputs : ", forward, reverse, left, right)
+        return transform(forward, reverse, left, right)
