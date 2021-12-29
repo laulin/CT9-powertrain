@@ -13,6 +13,7 @@ class MotorControler:
         self._b_pin.off()
 
     def set(self, value):
+        #print("set consign : ", value)
         if value > 0:
             self._a_pin.on()
             self._b_pin.off()
@@ -23,5 +24,5 @@ class MotorControler:
             self._pwm.duty(-value)
         else:
             self._a_pin.off()
-            self._b_pin.of()
+            self._b_pin.off()
             self._pwm.duty(0)
