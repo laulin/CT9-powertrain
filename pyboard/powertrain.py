@@ -46,10 +46,10 @@ class Powertrain:
                 self._left_ramp.update(left_direction, delta)
                 self._right_ramp.update(right_direction, delta)
 
-                left_consign = self._left_ramp.get_normalized()
+                left_consign = self._left_ramp.get_normalized(750)
                 self._left_motor_controler.set(left_consign)
 
-                right_consign = self._right_ramp.get_normalized()
+                right_consign = self._right_ramp.get_normalized(750)
                 self._right_motor_controler.set(right_consign)
 
                 print("")
