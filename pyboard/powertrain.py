@@ -71,7 +71,7 @@ class Powertrain:
                 self._right_ramp.update(right_direction, TIME_STEP)
 
                 left_consign = self._left_ramp.get_normalized(MAX_ANGULAR_SPEED)
-                left_feedback = 
+                left_feedback = 0
                 #left_pwm = self._left_servo.update(left_consign, left_feedback)
                 left_pwm = self._left_servo.update(left_consign, 0)
                 self._left_motor_controler.set(left_pwm)
