@@ -1,5 +1,5 @@
 class Servo:
-    def __init__(self, p_factor:float, i_factor:float, d_factor:float, output_range:int=1024) -> None:
+    def __init__(self, p_factor:float, i_factor:float, d_factor:float, output_range:int=1023) -> None:
         # output range is absolute value
         # consign and feedback are signed
         self._p_factor = p_factor
