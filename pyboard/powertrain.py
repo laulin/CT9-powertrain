@@ -2,10 +2,10 @@ import time
 import machine
 
 from joystick import Joystick
-from ramp import Ramp
 from motor_controler import MotorControler
 from servo import Servo
 from optical_encoder import OpticalEncoder
+from lp_filter import *
 
 #LED
 LED_PIN = 2
@@ -47,16 +47,13 @@ MAX_ANGULAR_SPEED = 50
 
 # PID
 PWM_MAX = 1023
-P_FACTOR = 4
+P_FACTOR = 5
 I_FACTOR = 0
 D_FACTOR = 0
 
 class Powertrain:
     def __init__(self, p_factor:float=P_FACTOR, i_factor:float=I_FACTOR, d_factor:float=D_FACTOR) -> None:
         self._joystick = Joystick(FORWARD_PIN, REVERSE_PIN, LEFT_PIN, RIGHT_PIN)
-
-        self._left_ramp = Ramp(RAMP_SIZE, RAMP_BREAK_FACTOR)
-        self._right_ramp = Ramp(RAMP_SIZE, RAMP_BREAK_FACTOR)
 
         self._left_motor_controler = MotorControler(LEFT_MOTOR_PWM, LEFT_MOTOR_A, LEFT_MOTOR_B)
         self._right_motor_controler = MotorControler(RIGHT_MOTOR_PWM, RIGHT_MOTOR_A, RIGHT_MOTOR_B)
@@ -67,31 +64,27 @@ class Powertrain:
         self._left_servo = Servo(p_factor, i_factor, d_factor)
         self._right_servo = Servo(p_factor, i_factor, d_factor)
 
+        self._left_lp_filter = LPFilter(gauss_factors(5, 0.1))
+        self._right_lp_filter = LPFilter(gauss_factors(5, 0.1))
+
         self._led = machine.Pin(LED_PIN, machine.Pin.OUT)
         self._led.off()
 
     def loop(self):
         while True:
             self._led.on()
-            left_direction, right_direction = self._joystick.get()
-            
-            self._left_ramp.update(left_direction, TIME_STEP)
-            self._right_ramp.update(right_direction, TIME_STEP)
+            left_consign, right_consign = self._joystick.get(MAX_ANGULAR_SPEED)
 
-            left_consign = self._left_ramp.get_normalized(MAX_ANGULAR_SPEED)
             left_feedback = self._left_encoder.get_and_clear_counter()
-            #left_feedback = 0
             left_pwm = self._left_servo.update(left_consign, left_feedback, TIME_STEP)
-            #left_pwm = self._left_servo.update(left_consign, 0, TIME_STEP)
-            self._left_motor_controler.set(left_pwm)
+            filtered_left_pwm = self._left_lp_filter.filter(left_pwm)
+            self._left_motor_controler.set(filtered_left_pwm)
 
-            right_consign = self._right_ramp.get_normalized(MAX_ANGULAR_SPEED)
             right_feedback = -self._right_encoder.get_and_clear_counter()
-            #right_feedback = 0
             right_pwm = self._left_servo.update(right_consign, right_feedback, TIME_STEP)
-            #right_pwm = self._left_servo.update(right_consign, 0, TIME_STEP)
-            self._right_motor_controler.set(right_pwm)
+            filtered_right_pwm = self._right_lp_filter.filter(right_pwm)
+            self._right_motor_controler.set(filtered_right_pwm)
 
-            print(f"[{left_direction},{right_direction}],[{left_consign},{left_feedback},{left_pwm}],[{right_consign},{right_feedback},{right_pwm}]")
+            print(f"[{left_consign},{left_feedback},{left_pwm},{filtered_left_pwm}],[{right_consign},{right_feedback},{right_pwm},{filtered_right_pwm}]")
             self._led.off()
             time.sleep_ms(TIME_STEP)
