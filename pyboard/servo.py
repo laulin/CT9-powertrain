@@ -17,15 +17,15 @@ class Servo:
         # proportional
         output = self._p_factor * diff
 
+        # integral
+        self._sum += diff * deltat
+        output += self._i_factor * self._sum
+
         # derive
         derive = (diff - self._n_1_value) / deltat
         self._n_1_value = diff
 
         output += self._d_factor * derive
-
-        # integral
-        self._sum += diff * deltat
-        output += self._i_factor * self._sum
 
 
         output = int(output)
