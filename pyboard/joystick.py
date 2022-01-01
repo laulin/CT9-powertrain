@@ -4,7 +4,7 @@ except:
     print("Bypass machine import")
 
 
-def transform(forward:bool, reverse:bool, left:bool, right:bool):
+def transform(forward:bool, reverse:bool, left:bool, right:bool, unit:int=1):
     if left and right:
         raise Exception("Left and right conflict")
 
@@ -13,18 +13,18 @@ def transform(forward:bool, reverse:bool, left:bool, right:bool):
 
     if forward:
         if not right and not left:
-            return 1, 1
+            return unit, unit
         elif left:
-            return 0,1
+            return 0,unit
         elif right:
-            return 1,0 
+            return unit,0 
     elif reverse:
         if not right and not left:
-            return -1, -1
+            return -unit, -unit
         elif left:
-            return 0,-1
+            return 0,-unit
         elif right:
-            return -1,0 
+            return -unit,0 
     else:
         return 0,0
 
@@ -35,10 +35,10 @@ class Joystick:
         self._left_pin = machine.Pin(left_pin, machine.Pin.IN, machine.Pin.PULL_UP)
         self._right_pin = machine.Pin(right_pin, machine.Pin.IN, machine.Pin.PULL_UP)
 
-    def get(self):
+    def get(self, unit:int=1):
         forward = not self._forward_pin.value()
         reverse = not self._reverse_pin.value()
         left = not self._left_pin.value()
         right = not self._right_pin.value()
         #print("inputs : ", forward, reverse, left, right)
-        return transform(forward, reverse, left, right)
+        return transform(forward, reverse, left, right, unit)
