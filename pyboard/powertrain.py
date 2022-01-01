@@ -47,12 +47,12 @@ MAX_ANGULAR_SPEED = 50
 
 # PID
 PWM_MAX = 1023
-P_FACTOR = 2
-I_FACTOR = 0.5
+P_FACTOR = 4
+I_FACTOR = 0
 D_FACTOR = 0
 
 class Powertrain:
-    def __init__(self) -> None:
+    def __init__(self, p_factor:float=P_FACTOR, i_factor:float=I_FACTOR, d_factor:float=D_FACTOR) -> None:
         self._joystick = Joystick(FORWARD_PIN, REVERSE_PIN, LEFT_PIN, RIGHT_PIN)
 
         self._left_ramp = Ramp(RAMP_SIZE, RAMP_BREAK_FACTOR)
@@ -64,8 +64,8 @@ class Powertrain:
         self._left_encoder = OpticalEncoder(LEFT_ENCODER_A, LEFT_ENCODER_B)
         self._right_encoder = OpticalEncoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B)
 
-        self._left_servo = Servo(P_FACTOR, I_FACTOR, D_FACTOR, PWM_MAX)
-        self._right_servo = Servo(P_FACTOR, I_FACTOR, D_FACTOR, PWM_MAX)
+        self._left_servo = Servo(p_factor, i_factor, d_factor)
+        self._right_servo = Servo(p_factor, i_factor, d_factor)
 
         self._led = machine.Pin(LED_PIN, machine.Pin.OUT)
         self._led.off()
