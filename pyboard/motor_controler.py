@@ -17,11 +17,11 @@ class MotorControler:
         if value > 0:
             self._a_pin.on()
             self._b_pin.off()
-            self._pwm.duty(value)
+            self._pwm.duty(min(1023, value))
         elif value < 0:
             self._a_pin.off()
             self._b_pin.on()
-            self._pwm.duty(-value)
+            self._pwm.duty(max(-1023, -value))
         else:
             self._a_pin.off()
             self._b_pin.off()
