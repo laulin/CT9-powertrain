@@ -1,10 +1,14 @@
 import time
+import machine
 
 from joystick import Joystick
 from ramp import Ramp
 from motor_controler import MotorControler
 from servo import Servo
 from optical_encoder import OpticalEncoder
+
+#LED
+LED_PIN = 2
 
 # Joystick
 FORWARD_PIN = 21
@@ -38,12 +42,13 @@ RIGHT_ENCODER_B = 0
 ENCODER_ROUND_STEPS = 1024
 ENCODER_GEAR_RATION = 2
 TIME_STEP = 100
-MAX_ANGULAR_SPEED = int(ENCODER_ROUND_STEPS * ENCODER_GEAR_RATION / TIME_STEP)
+#MAX_ANGULAR_SPEED = int(TIME_STEP * ENCODER_ROUND_STEPS * ENCODER_GEAR_RATION / 1000)
+MAX_ANGULAR_SPEED = 50
 
 # PID
-PWM_MAX = 1024
-P_FACTOR = PWM_MAX/MAX_ANGULAR_SPEED
-I_FACTOR = 0
+PWM_MAX = 1023
+P_FACTOR = 2
+I_FACTOR = 0.5
 D_FACTOR = 0
 
 class Powertrain:
@@ -62,28 +67,31 @@ class Powertrain:
         self._left_servo = Servo(P_FACTOR, I_FACTOR, D_FACTOR, PWM_MAX)
         self._right_servo = Servo(P_FACTOR, I_FACTOR, D_FACTOR, PWM_MAX)
 
+        self._led = machine.Pin(LED_PIN, machine.Pin.OUT)
+        self._led.off()
+
     def loop(self):
         while True:
-            try:
-                left_direction, right_direction = self._joystick.get()
-                
-                self._left_ramp.update(left_direction, TIME_STEP)
-                self._right_ramp.update(right_direction, TIME_STEP)
+            self._led.on()
+            left_direction, right_direction = self._joystick.get()
+            
+            self._left_ramp.update(left_direction, TIME_STEP)
+            self._right_ramp.update(right_direction, TIME_STEP)
 
-                left_consign = self._left_ramp.get_normalized(MAX_ANGULAR_SPEED)
-                left_feedback = 0
-                #left_pwm = self._left_servo.update(left_consign, left_feedback)
-                left_pwm = self._left_servo.update(left_consign, 0)
-                self._left_motor_controler.set(left_pwm)
+            left_consign = self._left_ramp.get_normalized(MAX_ANGULAR_SPEED)
+            left_feedback = self._left_encoder.get_and_clear_counter()
+            #left_feedback = 0
+            left_pwm = self._left_servo.update(left_consign, left_feedback, TIME_STEP)
+            #left_pwm = self._left_servo.update(left_consign, 0, TIME_STEP)
+            self._left_motor_controler.set(left_pwm)
 
-                right_consign = self._right_ramp.get_normalized(MAX_ANGULAR_SPEED)
-                right_feedback = 0
-                #right_pwm = self._left_servo.update(right_consign, right_feedback)
-                right_pwm = self._left_servo.update(right_consign, 0)
-                self._right_motor_controler.set(right_pwm)
+            right_consign = self._right_ramp.get_normalized(MAX_ANGULAR_SPEED)
+            right_feedback = -self._right_encoder.get_and_clear_counter()
+            #right_feedback = 0
+            right_pwm = self._left_servo.update(right_consign, right_feedback, TIME_STEP)
+            #right_pwm = self._left_servo.update(right_consign, 0, TIME_STEP)
+            self._right_motor_controler.set(right_pwm)
 
-                print(f"[{left_direction},{right_direction}],[{left_consign},{left_feedback},{left_pwm}],[{right_consign},{right_feedback},{right_pwm}]")
-                time.sleep_ms(TIME_STEP)
-
-            except Exception as e:
-                print(e)
+            print(f"[{left_direction},{right_direction}],[{left_consign},{left_feedback},{left_pwm}],[{right_consign},{right_feedback},{right_pwm}]")
+            self._led.off()
+            time.sleep_ms(TIME_STEP)
