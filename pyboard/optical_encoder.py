@@ -1,5 +1,4 @@
 import machine
-import pyb
 
 class OpticalEncoder:
     # Hardware driver for optical encoder. Used to give the angular position of the sprocket.
@@ -10,7 +9,7 @@ class OpticalEncoder:
 
         self._counter = 0
 
-        self._pin_a.irq(handler=self.irq, trigger=Pin.IRQ_RISING, hard=True)
+        self._pin_a.irq(handler=self.irq, trigger=machine.Pin.IRQ_RISING)
 
 
     def irq(self, pin):
@@ -20,10 +19,10 @@ class OpticalEncoder:
             self._counter -= 1
 
     def get_and_clear_counter(self):
-        irq_state = pyb.disable_irq()
+        irq_state = machine.disable_irq()
         output = self._counter
         self._counter = 0
-        pyb.enable_irq(irq_state)
+        machine.enable_irq(irq_state)
 
         return output
 
